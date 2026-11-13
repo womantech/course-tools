@@ -101,6 +101,10 @@ input[type=range]:disabled{opacity:.35}
 .段 button{height:34px;min-width:44px;padding:0 8px;border-radius:9px;color:var(--次);font-size:13px;font-weight:600}
 .段 button[aria-pressed=true]{background:var(--面3);color:var(--字)}
 .段 button:disabled{opacity:.35;cursor:default}
+.麥選{display:flex;align-items:center;gap:6px;height:40px;padding:0 6px 0 10px;border-radius:12px;background:var(--面2);color:var(--次);max-width:230px;min-width:0;cursor:pointer}
+.麥選 svg{width:16px;height:16px}
+.麥選 select{appearance:none;-webkit-appearance:none;background:none;border:0;color:var(--字);font:inherit;font-size:13px;min-width:0;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;padding:0 14px 0 0;background-image:linear-gradient(45deg,transparent 50%,var(--次) 50%),linear-gradient(135deg,var(--次) 50%,transparent 50%);background-position:right 5px center,right 0 center;background-size:5px 5px;background-repeat:no-repeat}
+.麥選 select:disabled{opacity:.5;cursor:default}
 .錄鈕{height:48px;padding:0 20px 0 16px;border-radius:999px;display:flex;align-items:center;gap:10px;font-weight:650;font-size:15px;background:var(--錄);color:#fff;flex:none;transition:background .15s}
 .錄鈕 .點{width:14px;height:14px;border-radius:50%;background:#fff}
 .錄鈕.中{background:var(--字);color:var(--底)}
@@ -143,6 +147,8 @@ kbd{font:600 12px/1 var(--字體);padding:4px 7px;border-radius:6px;background:v
   .播鈕{order:0}
   .段{order:2}
   .圖鈕.聲{order:3}
+  .麥選{order:3;max-width:none;flex:1}
+  .麥選 select{max-width:none;flex:1}
   .錄鈕{order:4;flex-basis:100%;justify-content:center}
   .步驟{grid-template-columns:1fr}
   .檔 span{max-width:40vw}
@@ -233,6 +239,7 @@ kbd{font:600 12px/1 var(--字體);padding:4px 7px;border-radius:6px;background:v
       <button data-速="2" aria-pressed="false" disabled>2×</button>
     </div>
     <button class="圖鈕 聲" id="原聲" disabled title="學員原聲：關（M）" aria-label="學員原聲"><svg><use href="#i-mute" id="聲圖"/></svg></button>
+    <label class="麥選" title="用哪一支麥克風錄音"><svg><use href="#i-mic"/></svg><select id="麥克風" aria-label="麥克風"><option value="">系統預設麥克風</option></select></label>
     <button class="錄鈕" id="錄鈕" disabled title="開始錄音／結束並存檔（R）"><span class="點"></span><span id="錄字">開始錄音</span></button>
   </div>
 </main>
@@ -245,7 +252,7 @@ kbd{font:600 12px/1 var(--字體);padding:4px 7px;border-radius:6px;background:v
     <h3 id="說明題">怎麼用</h3>
     <ol>
       <li><b>選影片</b>：選 Alvin 傳給你的學員影片。</li>
-      <li><b>開始錄音</b>：第一次會問能不能用麥克風，請按「允許」。上方紅色條裡的綠線會跟著你的聲音動，就是有收到音。</li>
+      <li><b>開始錄音</b>：有外接麥克風的話，先在錄音鈕旁邊的選單選它。第一次會問能不能用麥克風，請按「允許」。上方紅色條裡的綠線會跟著你的聲音動，就是有收到音。</li>
       <li><b>邊看邊講</b>：想講解的地方按暫停，用手指、觸控筆或滑鼠直接在畫面上圈、畫箭頭。暫停時，成品的畫面會停在那一格等你講完。</li>
       <li><b>講錯沒關係</b>：停頓、口誤 Claude 都會剪。整段講錯就拉回前面重講，跟 Alvin 說用後面那次。</li>
       <li><b>結束並存檔</b>：會存下一個檔案，傳給 Alvin。一支影片可以分好幾次錄，每次都是一個檔案。</li>
@@ -406,6 +413,23 @@ addEventListener("keydown", e => {
   else if(k === "?" || k === "/") 開窗("#說明窗");
 });
 
+// ---------- 選麥克風（外接麥克風也能選；插拔時自動更新，記住上次選的） ----------
+function 讀存(k){ try{ return localStorage.getItem(k) || ""; }catch(e){ return ""; } }
+function 寫存(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
+async function 列麥(){
+  if(!navigator.mediaDevices?.enumerateDevices) return;
+  try{
+    const 裝置 = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === "audioinput" && d.deviceId && d.deviceId !== "default" && d.deviceId !== "communications");
+    const s = $("#麥克風"), 要 = s.value || 讀存("講解錄製_麥");
+    s.replaceChildren(new Option("系統預設麥克風", ""));
+    裝置.forEach((d, i) => s.append(new Option(d.label || ("麥克風 " + (i + 1)), d.deviceId)));
+    s.value = [...s.options].some(o => o.value === 要) ? 要 : "";
+  }catch(e){}
+}
+$("#麥克風").onchange = e => { 寫存("講解錄製_麥", e.target.value); 吐("錄音會用：" + e.target.selectedOptions[0].textContent); };
+navigator.mediaDevices?.addEventListener?.("devicechange", 列麥);
+列麥();
+
 // ---------- 錄音 ----------
 function 聲音格式(){ for(const t of ["audio/webm;codecs=opus","audio/mp4","audio/webm"]) if(window.MediaRecorder && MediaRecorder.isTypeSupported(t)) return t; return ""; }
 $("#錄鈕").onclick = () => 錄中 ? 結束() : 開始();
@@ -415,13 +439,20 @@ async function 開始(){
   if(準備中) return;
   準備中 = true; $("#錄鈕").disabled = true; $("#錄字").textContent = "準備麥克風…";     // 接上麥克風要一點時間，先讓人知道有按到
   let 流;
-  try{ 流 = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false, noiseSuppression:false, autoGainControl:false, channelCount:1}}); }
+  const 選麥 = $("#麥克風").value;
+  const 要求 = 編號 => ({audio:Object.assign({echoCancellation:false, noiseSuppression:false, autoGainControl:false, channelCount:1}, 編號 ? {deviceId:{exact:編號}} : {})});
+  try{
+    try{ 流 = await navigator.mediaDevices.getUserMedia(要求(選麥)); }
+    catch(err){ if(!選麥 || err.name === "NotAllowedError") throw err; 吐("找不到選的麥克風，改用系統預設的"); 流 = await navigator.mediaDevices.getUserMedia(要求("")); }
+  }
   catch(err){ $("#麥因").textContent = err.name === "NotAllowedError" ? "瀏覽器擋住了麥克風。照下面的方法打開後，再按一次「開始錄音」。" : "找不到麥克風（" + err.message + "）。接好麥克風後再試一次。"; 開窗("#麥窗"); return; }
   finally{ 準備中 = false; $("#錄鈕").disabled = false; $("#錄字").textContent = "開始錄音"; }
   const 型 = 聲音格式();
   錄 = new MediaRecorder(流, 型 ? {mimeType:型, audioBitsPerSecond:64000} : {});
   聲塊 = []; 事件 = []; 錄中 = true; 起 = performance.now();
   const 軌 = 流.getAudioTracks()[0];
+  await 列麥(); const 實際 = 軌.getSettings().deviceId; if(實際 && [...$("#麥克風").options].some(o => o.value === 實際)) $("#麥克風").value = 實際;
+  $("#麥克風").disabled = true;
   會話 = {格式:版本, 開始時間:new Date().toISOString(), 影片:檔資料, 聲音格式:錄.mimeType,
           麥克風:{取樣:軌.getSettings().sampleRate || null, 裝置:軌.label}, 畫面:{寬:畫布.clientWidth, 高:畫布.clientHeight}, 瀏覽器:navigator.userAgent};
   錄.ondataavailable = e => { if(e.data.size){ 聲塊.push(e.data); 存塊(e.data); } };
@@ -433,7 +464,7 @@ async function 開始(){
   $("#錄鈕").classList.add("中"); $("#錄字").textContent = "結束並存檔"; $("#錄狀").hidden = false;
   計時 = setInterval(() => { const s = (performance.now()-起)/1000; $("#錄時").textContent = 兩位(Math.floor(s/60)) + ":" + 兩位(Math.floor(s%60)); }, 250);
   await 開資料庫(); 清資料庫(); 存會話();
-  吐("開始錄音了，邊看邊講吧");
+  吐("開始錄音了（" + (軌.label || "麥克風") + "），邊看邊講吧");
 }
 function 結束(){
   if(!錄 || 存中) return;
@@ -445,7 +476,7 @@ function 結束(){
     錄.stream.getTracks().forEach(t => t.stop()); if(聲境) 聲境.close();
     const 名 = await 下載(new Blob(聲塊, {type:錄.mimeType}), Object.assign({}, 會話, {結束時間:new Date().toISOString(), 事件}));
     清資料庫();
-    存中 = false; $("#錄鈕").disabled = false; $("#錄鈕").classList.remove("中"); $("#錄字").textContent = "開始錄音";
+    存中 = false; $("#麥克風").disabled = false; $("#錄鈕").disabled = false; $("#錄鈕").classList.remove("中"); $("#錄字").textContent = "開始錄音";
     $("#存好名").textContent = 名; 開窗("#存好窗");
   };
   錄.stop();

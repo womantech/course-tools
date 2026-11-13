@@ -213,18 +213,18 @@ kbd{font:600 12px/1 var(--字體);padding:4px 7px;border-radius:6px;background:v
       <button class="色鈕" style="--c:#0a84ff" data-色="#0a84ff" aria-pressed="false" title="藍（4）" aria-label="藍色"><i></i></button>
       <button class="色鈕" style="--c:#ffffff" data-色="#ffffff" aria-pressed="false" title="白（5）" aria-label="白色"><i></i></button>
       <span class="分"></span>
-      <button class="粗鈕" data-粗="0.004" aria-pressed="false" title="細" aria-label="細"><i style="width:4px;height:4px"></i></button>
+      <button class="粗鈕" data-粗="0.004" aria-pressed="false" title="細（[）" aria-label="細"><i style="width:4px;height:4px"></i></button>
       <button class="粗鈕" data-粗="0.007" aria-pressed="true" title="中" aria-label="中"><i style="width:7px;height:7px"></i></button>
-      <button class="粗鈕" data-粗="0.012" aria-pressed="false" title="粗" aria-label="粗"><i style="width:11px;height:11px"></i></button>
+      <button class="粗鈕" data-粗="0.012" aria-pressed="false" title="粗（]）" aria-label="粗"><i style="width:11px;height:11px"></i></button>
       <span class="分"></span>
-      <button class="具" id="復原" disabled title="收回上一筆（Z）" aria-label="收回上一筆"><svg><use href="#i-undo"/></svg></button>
-      <button class="具" id="清除" disabled title="清除畫面上的線" aria-label="清除畫面上的線"><svg><use href="#i-erase"/></svg></button>
+      <button class="具" id="復原" disabled title="收回上一筆（⌘Z）" aria-label="收回上一筆"><svg><use href="#i-undo"/></svg></button>
+      <button class="具" id="清除" disabled title="清除畫面上的線（C）" aria-label="清除畫面上的線"><svg><use href="#i-erase"/></svg></button>
       <button class="具" id="自動清" aria-pressed="true" title="按播放時自動清掉線：開" aria-label="按播放時自動清掉線"><svg><use href="#i-auto"/></svg></button>
     </div>
   </div>
 
   <div class="控制">
-    <button class="播鈕" id="播放" disabled title="播放（空白鍵）" aria-label="播放"><svg><use href="#i-play" id="播圖"/></svg></button>
+    <button class="播鈕" id="播放" disabled title="播放／暫停（空白鍵）" aria-label="播放"><svg><use href="#i-play" id="播圖"/></svg></button>
     <div class="軸"><span class="數" id="現時">0:00</span><input id="進度" type="range" min="0" max="0" step="0.01" value="0" disabled aria-label="播放進度"><span class="數" id="總時">0:00</span></div>
     <div class="段" role="group" aria-label="播放速度">
       <button data-速="0.5" aria-pressed="false" disabled>0.5×</button>
@@ -232,8 +232,8 @@ kbd{font:600 12px/1 var(--字體);padding:4px 7px;border-radius:6px;background:v
       <button data-速="1.5" aria-pressed="false" disabled>1.5×</button>
       <button data-速="2" aria-pressed="false" disabled>2×</button>
     </div>
-    <button class="圖鈕 聲" id="原聲" disabled title="學員原聲：關（要聽請戴耳機）" aria-label="學員原聲"><svg><use href="#i-mute" id="聲圖"/></svg></button>
-    <button class="錄鈕" id="錄鈕" disabled><span class="點"></span><span id="錄字">開始錄音</span></button>
+    <button class="圖鈕 聲" id="原聲" disabled title="學員原聲：關（M）" aria-label="學員原聲"><svg><use href="#i-mute" id="聲圖"/></svg></button>
+    <button class="錄鈕" id="錄鈕" disabled title="開始錄音／結束並存檔（R）"><span class="點"></span><span id="錄字">開始錄音</span></button>
   </div>
 </main>
 
@@ -251,7 +251,7 @@ kbd{font:600 12px/1 var(--字體);padding:4px 7px;border-radius:6px;background:v
       <li><b>結束並存檔</b>：會存下一個檔案，傳給 Alvin。一支影片可以分好幾次錄，每次都是一個檔案。</li>
     </ol>
     <p>學員原聲預設關掉，喇叭的聲音才不會被錄進去；要聽原聲請戴耳機。</p>
-    <div class="鍵"><kbd>空白鍵</kbd>播放／暫停<kbd>Z</kbd>收回上一筆<kbd>1–5</kbd>換顏色</div>
+    <div class="鍵"><kbd>R</kbd>開始錄音／結束並存檔<kbd>空白鍵</kbd>播放／暫停<kbd>← →</kbd>往前、往後 5 秒（加 Shift 是 1 秒）<kbd>1–5</kbd>換顏色：紅、黃、綠、藍、白<kbd>[　]</kbd>筆變細、變粗<kbd>⌘Z 或 Z</kbd>收回上一筆<kbd>C</kbd>清除畫面上的線<kbd>A</kbd>播放時自動清線：開／關<kbd>M</kbd>學員原聲：開／關<kbd>?</kbd>打開這個說明</div>
     <div class="鈕列"><button class="鈕 主" data-關>知道了</button></div>
   </div>
 </div>
@@ -381,12 +381,29 @@ $("#自動清").onclick = () => { 自動清 = !自動清; $("#自動清").setAtt
   $("#自動清").title = "按播放時自動清掉線：" + (自動清 ? "開" : "關"); 吐(自動清 ? "按播放時會自動清掉畫的線" : "按播放時線會留著，要清請按橡皮擦"); 記("autoclear", {on:自動清}); };
 function 更新工具(){ $("#復原").disabled = !線們.length; $("#清除").disabled = !線們.length; }
 
+// 鍵盤：照常見影片和繪圖軟體的習慣（⌘Z 收回、[ ] 粗細、方向鍵前後跳）
+function 選粗(i){ const b = $$(".粗鈕"); i = Math.max(0, Math.min(b.length-1, i)); b[i].click(); }
+function 粗位(){ return [...$$(".粗鈕")].findIndex(b => b.getAttribute("aria-pressed") === "true"); }
+function 跳(秒){ if(!檔資料) return; 影片.currentTime = Math.max(0, Math.min(影片.duration, 影片.currentTime + 秒)); 更新時間(); }
 addEventListener("keydown", e => {
-  if(e.target.closest && e.target.closest("input:not([type=range]),textarea") || e.metaKey || e.ctrlKey || e.altKey) return;
+  if(e.target.closest && e.target.closest("input:not([type=range]),textarea")) return;
   if(!$("#說明窗").hidden || !$("#存好窗").hidden || !$("#麥窗").hidden){ if(e.key === "Escape") $$(".罩").forEach(w => w.hidden = true); return; }
+  const 指令 = e.metaKey || e.ctrlKey;
+  if(指令 && (e.key === "z" || e.key === "Z") && !e.shiftKey){ e.preventDefault(); 收回(); return; }
+  if(指令 || e.altKey) return;
+  const k = e.key;
   if(e.code === "Space"){ e.preventDefault(); 播(); }
-  else if(e.key === "z" || e.key === "Z") 收回();
-  else if(/^[1-5]$/.test(e.key)) 選色($$(".色鈕")[+e.key - 1]);
+  else if(k === "z" || k === "Z") 收回();
+  else if(k === "Backspace" || k === "Delete" || k === "c" || k === "C"){ e.preventDefault(); $("#清除").click(); }
+  else if(/^[1-5]$/.test(k)) 選色($$(".色鈕")[+k - 1]);
+  else if(k === "[") 選粗(粗位() - 1);
+  else if(k === "]") 選粗(粗位() + 1);
+  else if(k === "a" || k === "A") $("#自動清").click();
+  else if(k === "ArrowLeft"){ e.preventDefault(); 跳(e.shiftKey ? -1 : -5); }
+  else if(k === "ArrowRight"){ e.preventDefault(); 跳(e.shiftKey ? 1 : 5); }
+  else if(k === "m" || k === "M") $("#原聲").click();
+  else if(k === "r" || k === "R"){ if(!$("#錄鈕").disabled) $("#錄鈕").click(); }
+  else if(k === "?" || k === "/") 開窗("#說明窗");
 });
 
 // ---------- 錄音 ----------
@@ -402,12 +419,13 @@ async function 開始(){
   catch(err){ $("#麥因").textContent = err.name === "NotAllowedError" ? "瀏覽器擋住了麥克風。照下面的方法打開後，再按一次「開始錄音」。" : "找不到麥克風（" + err.message + "）。接好麥克風後再試一次。"; 開窗("#麥窗"); return; }
   finally{ 準備中 = false; $("#錄鈕").disabled = false; $("#錄字").textContent = "開始錄音"; }
   const 型 = 聲音格式();
-  錄 = new MediaRecorder(流, 型 ? {mimeType:型, audioBitsPerSecond:128000} : {});
+  錄 = new MediaRecorder(流, 型 ? {mimeType:型, audioBitsPerSecond:64000} : {});
   聲塊 = []; 事件 = []; 錄中 = true; 起 = performance.now();
   const 軌 = 流.getAudioTracks()[0];
   會話 = {格式:版本, 開始時間:new Date().toISOString(), 影片:檔資料, 聲音格式:錄.mimeType,
           麥克風:{取樣:軌.getSettings().sampleRate || null, 裝置:軌.label}, 畫面:{寬:畫布.clientWidth, 高:畫布.clientHeight}, 瀏覽器:navigator.userAgent};
   錄.ondataavailable = e => { if(e.data.size){ 聲塊.push(e.data); 存塊(e.data); } };
+  錄.onstart = () => 記("recorder-start");
   錄.start(1000);
   記("start", {paused:影片.paused, rate:影片.playbackRate, muted:影片.muted, autoclear:自動清});
   if(線們.length) 記("visible", {線們});           // 開始錄時畫面上已經有的線

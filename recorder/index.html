@@ -285,7 +285,7 @@ const 影片 = $("#影片"), 畫布 = $("#畫布"), 筆 = 畫布.getContext("2d"
 const 版本 = "老師講解錄製 v1";
 let 色 = "#ff3b30", 粗 = 0.007, 自動清 = true;
 let 錄 = null, 起 = 0, 事件 = [], 聲塊 = [], 錄中 = false, 有筆 = false, 存中 = false;
-let 線們 = [], 現線 = null, 檔資料 = null, 計時 = null, 聲境 = null, 會話 = null, 提醒過 = false;
+let 準備中 = false, 線們 = [], 現線 = null, 檔資料 = null, 計時 = null, 聲境 = null, 會話 = null, 提醒過 = false;
 
 const 秒字 = s => { s = Math.max(0, s || 0); return Math.floor(s/60) + ":" + String(Math.floor(s%60)).padStart(2,"0"); };
 const 兩位 = n => String(n).padStart(2,"0");
@@ -395,9 +395,12 @@ $("#錄鈕").onclick = () => 錄中 ? 結束() : 開始();
 async function 開始(){
   if(!$("#補存").hidden){ 吐("請先處理上方「上次的錄音」：存下來或不要了"); return; }   // 開始新的會清掉舊的，不能讓沒存的錄音不見
   if(!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder){ $("#麥因").textContent = "這個瀏覽器不支援錄音，請改用最新版的 Chrome 或 Safari。"; 開窗("#麥窗"); return; }
+  if(準備中) return;
+  準備中 = true; $("#錄鈕").disabled = true; $("#錄字").textContent = "準備麥克風…";     // 接上麥克風要一點時間，先讓人知道有按到
   let 流;
   try{ 流 = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false, noiseSuppression:false, autoGainControl:false, channelCount:1}}); }
   catch(err){ $("#麥因").textContent = err.name === "NotAllowedError" ? "瀏覽器擋住了麥克風。照下面的方法打開後，再按一次「開始錄音」。" : "找不到麥克風（" + err.message + "）。接好麥克風後再試一次。"; 開窗("#麥窗"); return; }
+  finally{ 準備中 = false; $("#錄鈕").disabled = false; $("#錄字").textContent = "開始錄音"; }
   const 型 = 聲音格式();
   錄 = new MediaRecorder(流, 型 ? {mimeType:型, audioBitsPerSecond:128000} : {});
   聲塊 = []; 事件 = []; 錄中 = true; 起 = performance.now();

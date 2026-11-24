@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>講解錄製</title>
 <style>
-/* 版面：上方狀態列，中間影片舞台（筆盒浮在左邊），下方播放與錄音列。刻意只做深色：看影片的工具，深色畫面最不搶眼 */
+/* 版面：上方狀態列，中間影片舞台（工具盒浮在左邊），下方播放與錄音列。只做深色：看影片的工具，深色最不搶眼 */
 :root{
   --底:#111012; --面:#1b1a1d; --面2:#242227; --面3:#2e2b32; --線:#38343d;
   --字:#f4f1f4; --次:#a8a1ad; --弱:#6f6875;
@@ -27,7 +27,6 @@ svg{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:
 [hidden]{display:none!important}
 .數{font-variant-numeric:tabular-nums}
 
-/* 上方 */
 .頂{display:flex;align-items:center;gap:12px;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--線);min-height:60px}
 .標{display:flex;align-items:center;gap:10px;font-weight:650;font-size:16px;letter-spacing:.02em;white-space:nowrap}
 .標 i{width:28px;height:28px;border-radius:8px;background:linear-gradient(140deg,var(--主),#c98fd8);display:grid;place-items:center;color:var(--主字)}
@@ -42,26 +41,33 @@ svg{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:
 .錄狀 .量 i{display:block;height:100%;width:0;background:var(--好);transition:width .08s linear}
 @keyframes 閃{50%{opacity:.25}}
 .圖鈕{width:40px;height:40px;border-radius:var(--圓小);display:grid;place-items:center;color:var(--次)}
-.圖鈕:hover{background:var(--面2);color:var(--字)}
+.圖鈕:hover:not(:disabled){background:var(--面2);color:var(--字)}
+.圖鈕:disabled{opacity:.35;cursor:default}
 
-/* 中間 */
 .工作區{flex:1;min-height:0;display:flex;flex-direction:column}
 .補存{margin:12px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));padding:12px 14px;border-radius:var(--圓);background:#3a2a12;color:#ffd99a;display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px}
 .補存 .撐{min-width:160px}
 .舞台框{flex:1;min-height:0;position:relative;display:grid;place-items:center;padding:12px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));container-type:size}
-.有片 .舞台框{padding-left:calc(max(16px,env(safe-area-inset-left,0px)) + 66px)}
+.有片 .舞台框{padding-left:calc(max(16px,env(safe-area-inset-left,0px)) + 70px)}
 #舞台{position:relative;width:min(100cqw,calc((100cqh - 12px) * 16 / 9));max-width:100%;aspect-ratio:16/9;border-radius:var(--圓);overflow:hidden;background:#000;box-shadow:var(--影);touch-action:none}
 #舞台 video,#舞台 canvas{position:absolute;inset:0;width:100%;height:100%}
 #舞台 video{object-fit:contain}
 #舞台 canvas{touch-action:none;cursor:crosshair}
+#舞台 canvas.擦{cursor:cell}
 #舞台.拖{outline:2px dashed var(--主);outline-offset:-10px}
 
-.空{position:absolute;inset:0;display:grid;place-items:center;padding:20px;background:radial-gradient(120% 90% at 50% 0%,#221f26 0%,#141316 70%)}
-.空卡{width:min(560px,100%);display:grid;gap:22px;justify-items:center;text-align:center}
+.空{position:absolute;inset:0;display:grid;place-items:center;padding:20px;background:radial-gradient(120% 90% at 50% 0%,#221f26 0%,#141316 70%);overflow:auto}
+.空卡{width:min(560px,100%);display:grid;gap:20px;justify-items:center;text-align:center}
 .空卡 .大圖{width:64px;height:64px;border-radius:18px;background:var(--面3);display:grid;place-items:center;color:var(--主)}
 .空卡 .大圖 svg{width:30px;height:30px}
 .空卡 h2{margin:0;font-size:22px;font-weight:650;text-wrap:balance}
 .空卡 p{margin:0;color:var(--次)}
+.片單{display:grid;gap:10px;width:100%}
+.片單 button{display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:12px 16px;border-radius:14px;border:1px solid var(--線);background:var(--面3);font-size:16px;text-align:left}
+.片單 button:hover,.片單 button:focus-visible{border-color:var(--主);outline:none}
+.片單 button b{font-weight:650;flex:1}
+.片單 button small{color:var(--次)}
+.片單 button.做過 small::after{content:" · 錄過";color:var(--好)}
 .步驟{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%}
 .步驟 li{background:var(--面);border:1px solid var(--線);border-radius:var(--圓小);padding:12px 10px;font-size:13px;color:var(--次);text-align:left;display:grid;gap:4px}
 .步驟 li b{color:var(--字);font-size:14px;font-weight:600}
@@ -69,26 +75,30 @@ svg{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:
 .隱私{display:flex;align-items:center;gap:6px;color:var(--弱);font-size:12.5px}
 .隱私 svg{width:14px;height:14px}
 
-/* 筆盒：浮在舞台左邊 */
-.筆盒{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px;border-radius:18px;background:rgb(27 26 29 / .86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--線);box-shadow:var(--影);z-index:5}
-.色鈕{width:34px;height:34px;border-radius:50%;display:grid;place-items:center}
-.色鈕 i{width:22px;height:22px;border-radius:50%;background:var(--c);box-shadow:inset 0 0 0 1px rgb(0 0 0 / .25);transition:transform .15s}
-.色鈕[aria-pressed=true]{box-shadow:0 0 0 2px var(--c)}
-.色鈕[aria-pressed=true] i{transform:scale(.82)}
-.分{width:22px;height:1px;background:var(--線);margin:4px 0}
-.粗鈕{width:34px;height:30px;border-radius:8px;display:grid;place-items:center;color:var(--次)}
-.粗鈕 i{display:block;border-radius:50%;background:currentColor}
-.粗鈕[aria-pressed=true]{background:var(--面3);color:var(--字)}
-.具{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:var(--次)}
+/* 工具盒：浮在舞台左邊 */
+.筆盒{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border-radius:18px;background:rgb(27 26 29 / .9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--線);box-shadow:var(--影);z-index:5;max-height:calc(100% - 12px);overflow:auto}
+.具{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:var(--次);position:relative}
 .具:hover:not(:disabled){background:var(--面3);color:var(--字)}
 .具:disabled{opacity:.35;cursor:default}
-.具[aria-pressed=true]{background:var(--面3);color:var(--主)}
+.具[aria-pressed=true]{background:var(--主);color:var(--主字)}
+.具.切[aria-pressed=true]{background:var(--面3);color:var(--主)}
+.色鈕{width:34px;height:30px;border-radius:50%;display:grid;place-items:center}
+.色鈕 i{width:20px;height:20px;border-radius:50%;background:var(--c);box-shadow:inset 0 0 0 1px rgb(0 0 0 / .25);transition:transform .15s}
+.色鈕[aria-pressed=true] i{box-shadow:0 0 0 2px var(--面),0 0 0 4px var(--c)}
+.分{width:24px;height:1px;background:var(--線);margin:4px 0;flex:none}
+.粗鈕{width:34px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--次)}
+.粗鈕 i{display:block;border-radius:50%;background:currentColor}
+.粗鈕[aria-pressed=true]{background:var(--面3);color:var(--字)}
 
 /* 下方 */
-.控制{display:flex;align-items:center;gap:12px;padding:12px max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px))}
-.播鈕{width:48px;height:48px;border-radius:50%;background:var(--字);color:var(--底);display:grid;place-items:center;flex:none}
+.控制{display:flex;align-items:center;gap:10px;padding:12px max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px))}
+.播組{display:flex;align-items:center;gap:2px}
+.播鈕{width:50px;height:50px;border-radius:50%;background:var(--字);color:var(--底);display:grid;place-items:center;flex:none;margin:0 4px}
 .播鈕 svg{fill:currentColor;stroke:none;width:20px;height:20px}
 .播鈕:disabled{opacity:.3;cursor:default}
+.小鈕{height:40px;min-width:40px;padding:0 6px;border-radius:10px;display:grid;place-items:center;color:var(--次);font-size:12px;font-weight:650}
+.小鈕:hover:not(:disabled){background:var(--面2);color:var(--字)}
+.小鈕:disabled{opacity:.3;cursor:default}
 .軸{flex:1;min-width:120px;display:flex;align-items:center;gap:10px;color:var(--次);font-size:13px}
 input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:28px;background:transparent;margin:0}
 input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:3px;background:linear-gradient(var(--主),var(--主)) 0/var(--p,0%) 100% no-repeat,var(--面3)}
@@ -98,25 +108,24 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 input[type=range]::-moz-range-thumb{width:16px;height:16px;border:0;border-radius:50%;background:var(--字)}
 input[type=range]:disabled{opacity:.35}
 .段{display:flex;padding:3px;border-radius:12px;background:var(--面2);gap:2px}
-.段 button{height:34px;min-width:44px;padding:0 8px;border-radius:9px;color:var(--次);font-size:13px;font-weight:600}
+.段 button{height:34px;min-width:42px;padding:0 7px;border-radius:9px;color:var(--次);font-size:13px;font-weight:600}
 .段 button[aria-pressed=true]{background:var(--面3);color:var(--字)}
 .段 button:disabled{opacity:.35;cursor:default}
-.麥選{display:flex;align-items:center;gap:6px;height:40px;padding:0 6px 0 10px;border-radius:12px;background:var(--面2);color:var(--次);max-width:230px;min-width:0;cursor:pointer}
+.麥選{display:flex;align-items:center;gap:6px;height:40px;padding:0 6px 0 10px;border-radius:12px;background:var(--面2);color:var(--次);max-width:220px;min-width:0;cursor:pointer}
 .麥選 svg{width:16px;height:16px}
-.麥選 select{appearance:none;-webkit-appearance:none;background:none;border:0;color:var(--字);font:inherit;font-size:13px;min-width:0;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;padding:0 14px 0 0;background-image:linear-gradient(45deg,transparent 50%,var(--次) 50%),linear-gradient(135deg,var(--次) 50%,transparent 50%);background-position:right 5px center,right 0 center;background-size:5px 5px;background-repeat:no-repeat}
+.麥選 select{appearance:none;-webkit-appearance:none;background:none;border:0;color:var(--字);font:inherit;font-size:13px;min-width:0;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;padding:0 14px 0 0;background-image:linear-gradient(45deg,transparent 50%,var(--次) 50%),linear-gradient(135deg,var(--次) 50%,transparent 50%);background-position:right 5px center,right 0 center;background-size:5px 5px;background-repeat:no-repeat}
 .麥選 select:disabled{opacity:.5;cursor:default}
-.錄鈕{height:48px;padding:0 20px 0 16px;border-radius:999px;display:flex;align-items:center;gap:10px;font-weight:650;font-size:15px;background:var(--錄);color:#fff;flex:none;transition:background .15s}
+.錄鈕{height:50px;padding:0 20px 0 16px;border-radius:999px;display:flex;align-items:center;gap:10px;font-weight:650;font-size:15px;background:var(--錄);color:#fff;flex:none;transition:background .15s}
 .錄鈕 .點{width:14px;height:14px;border-radius:50%;background:#fff}
 .錄鈕.中{background:var(--字);color:var(--底)}
 .錄鈕.中 .點{border-radius:3px;background:var(--錄)}
 .錄鈕:disabled{background:var(--面3);color:var(--弱);cursor:default}
 .錄鈕:disabled .點{background:var(--弱)}
 
-/* 提示、面板 */
 .吐司{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translate(-50%,8px);padding:10px 16px;border-radius:12px;background:var(--面3);border:1px solid var(--線);box-shadow:var(--影);font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:30;max-width:calc(100% - 32px)}
 .吐司.顯{opacity:1;transform:translate(-50%,0)}
 .罩{position:fixed;inset:0;background:rgb(0 0 0 / .55);display:grid;place-items:center;padding:20px;z-index:40;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
-.窗{width:min(480px,100%);max-height:calc(100dvh - 40px);overflow:auto;background:var(--面);border:1px solid var(--線);border-radius:20px;padding:24px;box-shadow:var(--影);display:grid;gap:14px}
+.窗{width:min(520px,100%);max-height:calc(100dvh - 40px);overflow:auto;background:var(--面);border:1px solid var(--線);border-radius:20px;padding:24px;box-shadow:var(--影);display:grid;gap:14px}
 .窗 h3{margin:0;font-size:19px;font-weight:650;display:flex;align-items:center;gap:10px}
 .窗 p,.窗 li{color:var(--次);margin:0}
 .窗 ol{margin:0;padding-left:20px;display:grid;gap:8px}
@@ -127,24 +136,17 @@ kbd{font:600 12px/1 var(--字體);padding:4px 7px;border-radius:6px;background:v
 .鈕列{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
 .鈕{height:42px;padding:0 18px;border-radius:12px;font-weight:600;background:var(--面3)}
 .鈕.主{background:var(--主);color:var(--主字)}
-.開關{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:12px;background:var(--面2);cursor:pointer}
-.開關 input{appearance:none;-webkit-appearance:none;width:42px;height:26px;border-radius:13px;background:var(--線);position:relative;cursor:pointer;flex:none;transition:background .15s;margin:0}
-.開關 input::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .15s}
-.開關 input:checked{background:var(--好)}
-.開關 input:checked::after{transform:translateX(16px)}
-.開關 small{display:block;color:var(--弱);font-size:12.5px}
 
-/* 窄螢幕：筆盒改成影片下方一排，控制列分兩行 */
 @media (max-width:760px){
   body{height:auto;min-height:100%}
   .舞台框{container-type:normal;display:block;flex:none}
   #舞台{width:100%}
   .有片 .舞台框{padding-left:max(16px,env(safe-area-inset-left,0px))}
-  .筆盒{position:static;transform:none;flex-direction:row;flex-wrap:wrap;justify-content:center;margin:10px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));border-radius:16px}
-  .分{width:1px;height:22px;margin:0 4px}
+  .筆盒{position:static;transform:none;flex-direction:row;flex-wrap:wrap;justify-content:center;margin:10px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));border-radius:16px;max-height:none}
+  .分{width:1px;height:24px;margin:0 4px}
   .控制{flex-wrap:wrap}
-  .軸{order:1;flex-basis:calc(100% - 60px)}
-  .播鈕{order:0}
+  .軸{order:1;flex-basis:100%}
+  .播組{order:0;flex:1;justify-content:center}
   .段{order:2}
   .圖鈕.聲{order:3}
   .麥選{order:3;max-width:none;flex:1}
@@ -162,8 +164,12 @@ kbd{font:600 12px/1 var(--字體);padding:4px 7px;border-radius:6px;background:v
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18M17 3v18M3 7.5h4M3 12h18M3 16.5h4M17 7.5h4M17 16.5h4"/></symbol>
   <symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+  <symbol id="i-hl" viewBox="0 0 24 24"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 19 19 5M10 5h9v9"/></symbol>
+  <symbol id="i-circle" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="7"/></symbol>
+  <symbol id="i-eraser" viewBox="0 0 24 24"><path d="m7 21-4.3-4.3a1 1 0 0 1 0-1.4l10-10a1 1 0 0 1 1.4 0l5.6 5.6a1 1 0 0 1 0 1.4L11 21"/><path d="M22 21H7M5 11l9 9"/></symbol>
   <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
-  <symbol id="i-erase" viewBox="0 0 24 24"><path d="m7 21-4.3-4.3a1 1 0 0 1 0-1.4l10-10a1 1 0 0 1 1.4 0l5.6 5.6a1 1 0 0 1 0 1.4L11 21"/><path d="M22 21H7M5 11l9 9"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></symbol>
   <symbol id="i-auto" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5Z"/></symbol>
   <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></symbol>
@@ -180,13 +186,13 @@ kbd{font:600 12px/1 var(--字體);padding:4px 7px;border-radius:6px;background:v
   <div class="標"><i><svg><use href="#i-pen"/></svg></i>講解錄製</div>
   <button class="檔" id="換片" hidden title="換一支影片"><svg><use href="#i-film"/></svg><span id="檔名"></span><svg><use href="#i-swap"/></svg></button>
   <div class="撐"></div>
-  <div class="錄狀" id="錄狀" hidden><b></b><span class="數" id="錄時">00:00</span><span class="量" title="麥克風音量"><i id="量"></i></span></div>
-  <button class="圖鈕" id="說明鈕" title="怎麼用" aria-label="怎麼用"><svg><use href="#i-help"/></svg></button>
+  <div class="錄狀" id="錄狀" hidden><b></b><span>錄音中</span><span class="數" id="錄時">00:00</span><span class="量" title="麥克風音量"><i id="量"></i></span></div>
+  <button class="圖鈕" id="說明鈕" title="怎麼用（?）" aria-label="怎麼用"><svg><use href="#i-help"/></svg></button>
 </header>
 
 <main class="工作區">
   <div class="補存" id="補存" hidden>
-    <span class="撐">上次的錄音（<span id="補存名"></span>）還沒存檔就關掉了，錄到的內容還在這台裝置裡。</span>
+    <span class="撐">上次的錄音（<span id="補存名"></span>）還沒存檔就關掉了，錄到的內容還在這台電腦裡。</span>
     <button class="鈕 主" id="補存下載">存下來</button>
     <button class="鈕" id="補存丟">不要了</button>
   </div>
@@ -199,20 +205,27 @@ kbd{font:600 12px/1 var(--字體);padding:4px 7px;border-radius:6px;background:v
         <div class="空卡">
           <div class="大圖"><svg><use href="#i-film"/></svg></div>
           <div style="display:grid;gap:6px">
-            <h2>選一支學員影片開始講解</h2>
-            <p>也可以直接把影片拖進這裡</p>
+            <h2 id="空題">選一支學員影片開始講解</h2>
+            <p id="空說">也可以直接把影片拖進這裡</p>
           </div>
+          <div class="片單" id="片單" hidden></div>
           <button class="鈕 主" id="選片" style="height:48px;padding:0 26px;font-size:16px">選影片</button>
           <ol class="步驟">
-            <li><em>步驟 1</em><b>選影片</b>選 Alvin 傳給你的學員影片</li>
-            <li><em>步驟 2</em><b>邊看邊講</b>按錄音，暫停後直接在畫面上圈、畫</li>
-            <li><em>步驟 3</em><b>結束並存檔</b>把存下來的檔案傳給 Alvin</li>
+            <li><em>步驟 1</em><b>選影片</b><span id="步一">選 Alvin 傳給你的學員影片</span></li>
+            <li><em>步驟 2</em><b>邊看邊講</b>按錄音，暫停後直接在畫面上圈、畫、塗</li>
+            <li><em>步驟 3</em><b>結束並存檔</b>存下的檔案交給 Alvin</li>
           </ol>
-          <div class="隱私"><svg><use href="#i-lock"/></svg>影片和錄音都只在這台裝置上，不會上傳到網路</div>
+          <div class="隱私"><svg><use href="#i-lock"/></svg>影片和錄音都只在這台電腦上，不會上傳到網路，不用連網也能用</div>
         </div>
       </div>
     </div>
     <div class="筆盒" id="筆盒" role="toolbar" aria-label="畫筆" hidden>
+      <button class="具" data-具="筆" aria-pressed="true" title="畫筆（B）" aria-label="畫筆"><svg><use href="#i-pen"/></svg></button>
+      <button class="具" data-具="螢光" aria-pressed="false" title="螢光筆：半透明塗抹（H）" aria-label="螢光筆"><svg><use href="#i-hl"/></svg></button>
+      <button class="具" data-具="箭頭" aria-pressed="false" title="箭頭：從起點拉到要指的地方（A）" aria-label="箭頭"><svg><use href="#i-arrow"/></svg></button>
+      <button class="具" data-具="圈" aria-pressed="false" title="圈：拉出一個橢圓（O）" aria-label="圈"><svg><use href="#i-circle"/></svg></button>
+      <button class="具" data-具="擦" aria-pressed="false" title="橡皮擦：點一下或劃過去，擦掉那一筆（E）" aria-label="橡皮擦"><svg><use href="#i-eraser"/></svg></button>
+      <span class="分"></span>
       <button class="色鈕" style="--c:#ff3b30" data-色="#ff3b30" aria-pressed="true" title="紅（1）" aria-label="紅色"><i></i></button>
       <button class="色鈕" style="--c:#ffd60a" data-色="#ffd60a" aria-pressed="false" title="黃（2）" aria-label="黃色"><i></i></button>
       <button class="色鈕" style="--c:#30d158" data-色="#30d158" aria-pressed="false" title="綠（3）" aria-label="綠色"><i></i></button>
@@ -223,15 +236,21 @@ kbd{font:600 12px/1 var(--字體);padding:4px 7px;border-radius:6px;background:v
       <button class="粗鈕" data-粗="0.007" aria-pressed="true" title="中" aria-label="中"><i style="width:7px;height:7px"></i></button>
       <button class="粗鈕" data-粗="0.012" aria-pressed="false" title="粗（]）" aria-label="粗"><i style="width:11px;height:11px"></i></button>
       <span class="分"></span>
-      <button class="具" id="復原" disabled title="收回上一筆（⌘Z）" aria-label="收回上一筆"><svg><use href="#i-undo"/></svg></button>
-      <button class="具" id="清除" disabled title="清除畫面上的線（C）" aria-label="清除畫面上的線"><svg><use href="#i-erase"/></svg></button>
-      <button class="具" id="自動清" aria-pressed="true" title="按播放時自動清掉線：開" aria-label="按播放時自動清掉線"><svg><use href="#i-auto"/></svg></button>
+      <button class="具 切" id="復原" disabled title="收回上一筆（⌘Z 或 Z）" aria-label="收回上一筆"><svg><use href="#i-undo"/></svg></button>
+      <button class="具 切" id="清除" disabled title="全部清掉（C）" aria-label="全部清掉"><svg><use href="#i-trash"/></svg></button>
+      <button class="具 切" id="自動清" aria-pressed="true" title="按播放時自動清掉畫的線：開" aria-label="按播放時自動清掉畫的線"><svg><use href="#i-auto"/></svg></button>
     </div>
   </div>
 
   <div class="控制">
-    <button class="播鈕" id="播放" disabled title="播放／暫停（空白鍵）" aria-label="播放"><svg><use href="#i-play" id="播圖"/></svg></button>
-    <div class="軸"><span class="數" id="現時">0:00</span><input id="進度" type="range" min="0" max="0" step="0.01" value="0" disabled aria-label="播放進度"><span class="數" id="總時">0:00</span></div>
+    <div class="播組">
+      <button class="小鈕" id="退5" disabled title="往前 5 秒（←）" aria-label="往前 5 秒">−5秒</button>
+      <button class="小鈕" id="退格" disabled title="上一格（,）" aria-label="上一格">◀︎|</button>
+      <button class="播鈕" id="播放" disabled title="播放／暫停（空白鍵）" aria-label="播放"><svg><use href="#i-play" id="播圖"/></svg></button>
+      <button class="小鈕" id="進格" disabled title="下一格（.）" aria-label="下一格">|▶︎</button>
+      <button class="小鈕" id="進5" disabled title="往後 5 秒（→）" aria-label="往後 5 秒">+5秒</button>
+    </div>
+    <div class="軸"><span class="數" id="現時">0:00.0</span><input id="進度" type="range" min="0" max="0" step="0.01" value="0" disabled aria-label="播放進度"><span class="數" id="總時">0:00</span></div>
     <div class="段" role="group" aria-label="播放速度">
       <button data-速="0.5" aria-pressed="false" disabled>0.5×</button>
       <button data-速="1" aria-pressed="true" disabled>1×</button>
@@ -251,14 +270,15 @@ kbd{font:600 12px/1 var(--字體);padding:4px 7px;border-radius:6px;background:v
   <div class="窗" role="dialog" aria-modal="true" aria-labelledby="說明題">
     <h3 id="說明題">怎麼用</h3>
     <ol>
-      <li><b>選影片</b>：選 Alvin 傳給你的學員影片。</li>
+      <li><b>選影片</b>：點一位學員（或選 Alvin 傳給你的影片）。</li>
       <li><b>開始錄音</b>：有外接麥克風的話，先在錄音鈕旁邊的選單選它。第一次會問能不能用麥克風，請按「允許」。上方紅色條裡的綠線會跟著你的聲音動，就是有收到音。</li>
-      <li><b>邊看邊講</b>：想講解的地方按暫停，用手指、觸控筆或滑鼠直接在畫面上圈、畫箭頭。暫停時，成品的畫面會停在那一格等你講完。</li>
-      <li><b>講錯沒關係</b>：停頓、口誤 Claude 都會剪。整段講錯就拉回前面重講，跟 Alvin 說用後面那次。</li>
-      <li><b>結束並存檔</b>：會存下一個檔案，傳給 Alvin。一支影片可以分好幾次錄，每次都是一個檔案。</li>
+      <li><b>邊看邊講</b>：想仔細講的地方按暫停，用左邊的工具在畫面上畫：<b>畫筆</b>寫字畫線、<b>螢光筆</b>半透明塗一塊、<b>箭頭</b>從起點拉到要指的地方、<b>圈</b>拉出一個圈、<b>橡皮擦</b>點一下擦掉那一筆。暫停時，成品的畫面會停在那一格等你講完。</li>
+      <li><b>找精確的那一格</b>：用「◀︎|」「|▶︎」一格一格前後移，或「−5秒」「+5秒」。</li>
+      <li><b>講錯沒關係</b>：停頓、口誤都會剪。整段講錯就拉回前面重講，跟 Alvin 說用後面那次。</li>
+      <li><b>結束並存檔</b>：存成一個檔案，交給 Alvin。一支影片可以分好幾次錄，每次一個檔案。</li>
     </ol>
     <p>學員原聲預設關掉，喇叭的聲音才不會被錄進去；要聽原聲請戴耳機。</p>
-    <div class="鍵"><kbd>R</kbd>開始錄音／結束並存檔<kbd>空白鍵</kbd>播放／暫停<kbd>← →</kbd>往前、往後 5 秒（加 Shift 是 1 秒）<kbd>1–5</kbd>換顏色：紅、黃、綠、藍、白<kbd>[　]</kbd>筆變細、變粗<kbd>⌘Z 或 Z</kbd>收回上一筆<kbd>C</kbd>清除畫面上的線<kbd>A</kbd>播放時自動清線：開／關<kbd>M</kbd>學員原聲：開／關<kbd>?</kbd>打開這個說明</div>
+    <div class="鍵"><kbd>R</kbd>開始錄音／結束並存檔<kbd>空白鍵</kbd>播放／暫停<kbd>← →</kbd>往前、往後 5 秒（加 Shift 是 1 秒）<kbd>, .</kbd>上一格、下一格<kbd>B H A O E</kbd>畫筆、螢光筆、箭頭、圈、橡皮擦<kbd>1–5</kbd>紅、黃、綠、藍、白<kbd>[　]</kbd>筆變細、變粗<kbd>⌘Z 或 Z</kbd>收回上一筆<kbd>C</kbd>全部清掉<kbd>M</kbd>學員原聲：開／關<kbd>?</kbd>打開這個說明</div>
     <div class="鈕列"><button class="鈕 主" data-關>知道了</button></div>
   </div>
 </div>
@@ -266,9 +286,9 @@ kbd{font:600 12px/1 var(--字體);padding:4px 7px;border-radius:6px;background:v
 <div class="罩" id="存好窗" hidden>
   <div class="窗" role="dialog" aria-modal="true" aria-labelledby="存好題">
     <h3 id="存好題"><svg style="color:var(--好);width:26px;height:26px"><use href="#i-check"/></svg>已存檔</h3>
-    <p>檔案已經存到這台裝置的「下載」裡：</p>
+    <p>檔案已經存到這台電腦的「下載」資料夾：</p>
     <div class="檔名" id="存好名"></div>
-    <p>請用 LINE 或雲端硬碟把這個檔案傳給 Alvin。還沒講完的話，可以接著再錄一段。</p>
+    <p>錄了 <b id="存好長" class="數" style="color:var(--字)"></b>。把這個檔案交給 Alvin（USB、雲端或 LINE 都可以）。還沒講完的話，可以接著再錄一段。</p>
     <div class="鈕列"><button class="鈕 主" data-關>好</button></div>
   </div>
 </div>
@@ -279,6 +299,7 @@ kbd{font:600 12px/1 var(--字體);padding:4px 7px;border-radius:6px;background:v
     <p id="麥因"></p>
     <ol>
       <li><b>電腦（Chrome）</b>：按網址列左邊的圖示，把「麥克風」改成「允許」，再重新整理這一頁。</li>
+      <li><b>Mac 的系統設定</b>：「系統設定 → 隱私權與安全性 → 麥克風」，把 Google Chrome 打開。</li>
       <li><b>iPhone、iPad（Safari）</b>：按網址列的「大小」或「ᴀA」，選「網站設定」，把「麥克風」改成「允許」。</li>
     </ol>
     <div class="鈕列"><button class="鈕 主" data-關>好</button></div>
@@ -287,63 +308,108 @@ kbd{font:600 12px/1 var(--字體);padding:4px 7px;border-radius:6px;background:v
 
 <script>
 "use strict";
+/* 講解錄製 v2（2026-11-24）
+   時間怎麼對：聲音用 AudioWorklet 一格一格收（不經過 MediaRecorder），錄音檔的第 0 個取樣＝時間 0。
+   每個事件（播放、暫停、跳轉、速度、每一筆畫線的每一點）都記 a＝當下在錄音裡的秒數（AudioContext 的時鐘，和取樣同一個時鐘）。
+   播放時每 0.25 秒用 requestVideoFrameCallback 記一次「畫面真正顯示的那一格」（frame 事件），影片卡頓也對得準。
+   存檔：一個 zip，裡面 lecture.json（事件、畫線）和 voice.wav（16 位元單聲道），合成程式直接讀。 */
 const $ = s => document.querySelector(s), $$ = s => document.querySelectorAll(s);
 const 影片 = $("#影片"), 畫布 = $("#畫布"), 筆 = 畫布.getContext("2d");
-const 版本 = "老師講解錄製 v1";
-let 色 = "#ff3b30", 粗 = 0.007, 自動清 = true;
-let 錄 = null, 起 = 0, 事件 = [], 聲塊 = [], 錄中 = false, 有筆 = false, 存中 = false;
-let 準備中 = false, 線們 = [], 現線 = null, 檔資料 = null, 計時 = null, 聲境 = null, 會話 = null, 提醒過 = false;
+const 版本 = "老師講解錄製 v2";
+let 工具 = "筆", 色 = "#ff3b30", 粗 = 0.007, 自動清 = true;
+let 線們 = [], 現線 = null, 下號 = 1, 檔資料 = null, 有筆 = false, 提醒過 = false;
+let 錄中 = false, 準備中 = false, 存中 = false, 事件 = [], 會話 = null, 計時 = null;
+let 聲境 = null, 收節點 = null, 麥流 = null, 取樣率 = 48000, 起框 = null, 收到框 = 0, 待塊 = [], 待長 = 0, 塊們 = [], 上格 = -1, 補零 = 0;
+let 強記 = true, 最後顯 = null;   // 強記：下一格畫面一出現就記（播放、跳轉、換速度之後）；最後顯：螢幕上最後顯示的那一格（影片秒數）
 
-const 秒字 = s => { s = Math.max(0, s || 0); return Math.floor(s/60) + ":" + String(Math.floor(s%60)).padStart(2,"0"); };
+const 秒字 = (s, 小數) => { s = Math.max(0, s || 0); const m = Math.floor(s/60), r = s - m*60; return m + ":" + (小數 ? r.toFixed(1).padStart(4,"0") : String(Math.floor(r)).padStart(2,"0")); };
 const 兩位 = n => String(n).padStart(2,"0");
 const 本地時間 = d => d.getFullYear()+兩位(d.getMonth()+1)+兩位(d.getDate())+"-"+兩位(d.getHours())+兩位(d.getMinutes())+兩位(d.getSeconds());
 function 吐(t){ const e = $("#吐司"); e.textContent = t; e.classList.add("顯"); clearTimeout(e._t); e._t = setTimeout(() => e.classList.remove("顯"), 2600); }
 function 開窗(id){ $(id).hidden = false; $(id).querySelector("[data-關]")?.focus(); }
 $$(".罩").forEach(w => { w.addEventListener("click", e => { if(e.target === w || e.target.closest("[data-關]")) w.hidden = true; }); });
 $("#說明鈕").onclick = () => 開窗("#說明窗");
-function 記(type, 其他 = {}){ if(!錄中) return; 事件.push(Object.assign({t:Math.round(performance.now()-起), type, v:+影片.currentTime.toFixed(3)}, 其他)); 備份(); }
 
-// ---------- 選影片（按鈕或拖進來） ----------
+/* 錄音裡的時間（秒）：AudioContext 的時鐘，和錄下的取樣是同一個時鐘 */
+function 聲時(){ return (錄中 && 聲境 && 起框 !== null) ? +(聲境.currentTime - 起框/取樣率).toFixed(4) : null; }
+function 記(type, 其他 = {}){ if(!錄中) return; 事件.push(Object.assign({a:聲時(), type, v:+影片.currentTime.toFixed(4)}, 其他)); 備份(); }
+
+// ---------- 影片清單（離線錄製包會把學員影片列好）或自己選 ----------
+const 清單 = (() => { try{ return JSON.parse(document.getElementById("片單資料")?.textContent || "null"); }catch(e){ return null; } })();
+if(清單 && 清單.length){
+  $("#空題").textContent = "選一位學員開始講解"; $("#空說").textContent = "影片已經放好了，點一下就開始";
+  $("#步一").textContent = "點上面其中一位學員";
+  const 單 = $("#片單"); 單.hidden = false; $("#選片").hidden = true;
+  清單.forEach(x => {
+    const b = document.createElement("button"); b.type = "button";
+    const n = document.createElement("b"); n.textContent = x.名; const s = document.createElement("small"); s.textContent = x.長 ? "約 " + Math.round(x.長/60) + " 分鐘" : "";
+    b.append(n, s);
+    b.onclick = () => { if(錄中){ 吐("錄音中不能換影片，先按「結束並存檔」"); return; }
+      if(檔資料 && 檔資料.檔名 === x.檔){ $("#空").hidden = true; return; }
+      載入網址(encodeURI(x.路徑), {檔名:x.檔, 大小:x.大小, 修改時間:x.修改}, x.名); b.classList.add("做過"); };
+    單.append(b);
+  });
+}
 $("#選片").onclick = () => $("#選檔").click();
-$("#換片").onclick = () => { if(錄中){ 吐("錄音中不能換影片，先按「結束並存檔」"); return; } $("#選檔").click(); };
-$("#選檔").onchange = e => { const f = e.target.files[0]; if(f) 載入(f); e.target.value = ""; };
+$("#換片").onclick = () => { if(錄中){ 吐("錄音中不能換影片，先按「結束並存檔」"); return; }
+  if(清單 && 清單.length){ 影片.pause(); $("#空").hidden = false; } else $("#選檔").click(); };
+$("#選檔").onchange = e => { const f = e.target.files[0]; if(f) 載入檔(f); e.target.value = ""; };
 const 舞台 = $("#舞台");
 舞台.addEventListener("dragover", e => { e.preventDefault(); 舞台.classList.add("拖"); });
 舞台.addEventListener("dragleave", () => 舞台.classList.remove("拖"));
 舞台.addEventListener("drop", e => { e.preventDefault(); 舞台.classList.remove("拖"); const f = e.dataTransfer.files[0];
-  if(!f) return; if(!f.type.startsWith("video/")){ 吐("這不是影片檔"); return; } if(錄中){ 吐("錄音中不能換影片"); return; } 載入(f); });
-function 載入(f){
-  if(影片.src) URL.revokeObjectURL(影片.src);
-  影片.src = URL.createObjectURL(f);
-  檔資料 = {檔名:f.name, 大小:f.size, 修改時間:new Date(f.lastModified).toISOString()};
-  $("#檔名").textContent = f.name; $("#換片").hidden = false;
+  if(!f) return; if(!f.type.startsWith("video/")){ 吐("這不是影片檔"); return; } if(錄中){ 吐("錄音中不能換影片"); return; } 載入檔(f); });
+function 載入檔(f){ 載入網址(URL.createObjectURL(f), {檔名:f.name, 大小:f.size, 修改時間:new Date(f.lastModified).toISOString()}, f.name); }
+function 載入網址(url, 資, 顯示名){
+  if(影片.src && 影片.src.startsWith("blob:")) URL.revokeObjectURL(影片.src);
+  影片.src = url; 檔資料 = 資;
+  $("#檔名").textContent = 顯示名; $("#換片").hidden = false;
   線們 = []; 重畫(); 更新工具();
 }
 影片.onloadedmetadata = () => {
   $("#空").hidden = true; $("#筆盒").hidden = false; document.body.classList.add("有片");
   Object.assign(檔資料, {長度:+影片.duration.toFixed(3), 寬:影片.videoWidth, 高:影片.videoHeight});
   $("#進度").max = 影片.duration; $("#總時").textContent = 秒字(影片.duration);
-  $$("#播放,#進度,.段 button,#原聲,#錄鈕").forEach(b => b.disabled = false);
+  $$("#播放,#進度,.段 button,#原聲,#錄鈕,#退5,#進5,#退格,#進格").forEach(b => b.disabled = false);
   調畫布(); 更新時間();
 };
-影片.onerror = () => 吐("這支影片打不開，換一支試試看（建議 MP4 或 MOV）");
+影片.onerror = () => 吐("這支影片打不開，換一支試試看（建議 MP4）");
 
 // ---------- 播放 ----------
 function 播(){ if(!檔資料) return;
   if(影片.paused){ if(自動清 && 線們.length){ 線們 = []; 重畫(); 記("clear", {自動:true}); 更新工具(); } 影片.play(); } else 影片.pause(); }
 $("#播放").onclick = 播;
-影片.onplay = () => { $("#播圖").setAttribute("href","#i-pause"); $("#播放").setAttribute("aria-label","暫停"); 記("play"); };
-影片.onpause = () => { $("#播圖").setAttribute("href","#i-play"); $("#播放").setAttribute("aria-label","播放"); 記("pause"); };
-影片.onseeked = () => 記("seek");
+影片.onplay = () => { $("#播圖").setAttribute("href","#i-pause"); $("#播放").setAttribute("aria-label","暫停"); 強記 = true; 記("play"); };
+影片.onpause = () => { $("#播圖").setAttribute("href","#i-play"); $("#播放").setAttribute("aria-label","播放"); 記("pause", 最後顯 !== null ? {顯:+最後顯.toFixed(6)} : {}); };
+影片.onseeking = () => 記("seeking");   // v 是要跳去的地方；跳好之前畫面還停在原本那一格
+影片.onseeked = () => { 強記 = true; 記("seek"); };
 影片.onended = () => 記("ended");
+影片.onwaiting = () => 記("waiting");
+影片.onplaying = () => { 強記 = true; 記("playing"); };
 影片.ontimeupdate = 更新時間;
-function 更新時間(){ const p = $("#進度"); p.value = 影片.currentTime; p.style.setProperty("--p", (影片.duration ? 影片.currentTime/影片.duration*100 : 0) + "%"); $("#現時").textContent = 秒字(影片.currentTime); }
+function 更新時間(){ const p = $("#進度"); p.value = 影片.currentTime; p.style.setProperty("--p", (影片.duration ? 影片.currentTime/影片.duration*100 : 0) + "%"); $("#現時").textContent = 秒字(影片.currentTime, true); }
 $("#進度").oninput = e => { 影片.currentTime = +e.target.value; 更新時間(); };
-$$(".段 button").forEach(b => b.onclick = () => { $$(".段 button").forEach(x => x.setAttribute("aria-pressed", x === b)); 影片.playbackRate = +b.dataset.速; 記("rate", {rate:影片.playbackRate}); });
+$$(".段 button").forEach(b => b.onclick = () => { $$(".段 button").forEach(x => x.setAttribute("aria-pressed", x === b)); 影片.playbackRate = +b.dataset.速; 強記 = true; 記("rate", {rate:影片.playbackRate}); });
 $("#原聲").onclick = () => { 影片.muted = !影片.muted; $("#聲圖").setAttribute("href", 影片.muted ? "#i-mute" : "#i-vol");
-  $("#原聲").title = 影片.muted ? "學員原聲：關" : "學員原聲：開（請戴耳機）"; 吐(影片.muted ? "學員原聲已關" : "學員原聲已開，請戴耳機，喇叭的聲音才不會被錄進去"); 記("mute", {muted:影片.muted}); };
+  $("#原聲").title = 影片.muted ? "學員原聲：關（M）" : "學員原聲：開（請戴耳機）"; 吐(影片.muted ? "學員原聲已關" : "學員原聲已開，請戴耳機，喇叭的聲音才不會被錄進去"); 記("mute", {muted:影片.muted}); };
+function 跳(秒){ if(!檔資料) return; 影片.currentTime = Math.max(0, Math.min(影片.duration, 影片.currentTime + 秒)); 更新時間(); }
+function 一格(方向){ if(!檔資料) return; if(!影片.paused) 影片.pause(); 跳(方向/30); }
+$("#退5").onclick = () => 跳(-5); $("#進5").onclick = () => 跳(5);
+$("#退格").onclick = () => 一格(-1); $("#進格").onclick = () => 一格(1);
+/* 記「畫面真正顯示的那一格」：expectedDisplayTime 是那一格出現在螢幕上的時間，換成錄音裡的秒數。
+   暫停中每一格都記（跳轉、逐格），播放、跳轉、換速度後的第一格馬上記，播放中每 0.25 秒記一次 */
+function 看格(now, md){
+  最後顯 = md.mediaTime;
+  if(錄中 && 聲境 && 起框 !== null){
+    const a = md.expectedDisplayTime/1000 + (聲境.currentTime - performance.now()/1000) - 起框/取樣率;
+    if(影片.paused || 強記 || a - 上格 >= 0.25){ 事件.push({a:+a.toFixed(4), type:"frame", v:+md.mediaTime.toFixed(6), 停:影片.paused}); 上格 = a; 強記 = false; }
+  }
+  影片.requestVideoFrameCallback(看格);
+}
+if("requestVideoFrameCallback" in HTMLVideoElement.prototype) 影片.requestVideoFrameCallback(看格);
+else setInterval(() => { if(錄中 && !影片.paused) 記("frame"); }, 250);
 
-// ---------- 畫線：座標存成影片畫面的比例（0～1），之後用原片合成才對得準 ----------
+// ---------- 畫線：座標是影片畫面的比例（0～1），之後畫在原片上才對得準 ----------
 function 影片框(){
   const r = 畫布.getBoundingClientRect(), vw = 影片.videoWidth || 16, vh = 影片.videoHeight || 9;
   const s = Math.min(r.width/vw, r.height/vh), w = vw*s, h = vh*s;
@@ -351,69 +417,113 @@ function 影片框(){
 }
 function 調畫布(){ const r = 畫布.getBoundingClientRect(), d = devicePixelRatio || 1; 畫布.width = Math.round(r.width*d); 畫布.height = Math.round(r.height*d); 筆.setTransform(d,0,0,d,0,0); 重畫(); }
 new ResizeObserver(調畫布).observe(畫布);
-function 畫一條(線){
-  const f = 影片框(), p = 線.點; if(!p.length) return;
-  筆.strokeStyle = 線.色; 筆.fillStyle = 線.色; 筆.lineCap = "round"; 筆.lineJoin = "round";
-  for(let i = 1; i < p.length; i++){
-    筆.lineWidth = Math.max(1, 線.粗 * f.w * (0.6 + 0.8*(p[i][2] ?? 0.5)));
-    筆.beginPath(); 筆.moveTo(f.x+p[i-1][0]*f.w, f.y+p[i-1][1]*f.h); 筆.lineTo(f.x+p[i][0]*f.w, f.y+p[i][1]*f.h); 筆.stroke();
+/* 畫法和合成程式（模組/講解合成.py 的 畫）一致，改了兩邊一起改 */
+function 畫一條(l){
+  const f = 影片框(), p = l.點; if(!p.length) return;
+  const X = q => f.x + q[0]*f.w, Y = q => f.y + q[1]*f.h, W = l.粗*f.w;
+  筆.save(); 筆.strokeStyle = l.色; 筆.fillStyle = l.色; 筆.lineCap = "round"; 筆.lineJoin = "round";
+  if(l.具 === "螢光"){
+    筆.globalAlpha = 0.38; 筆.lineWidth = Math.max(2, W*3.2); 筆.beginPath(); 筆.moveTo(X(p[0]), Y(p[0]));
+    for(let i = 1; i < p.length; i++) 筆.lineTo(X(p[i]), Y(p[i]));
+    if(p.length === 1) 筆.lineTo(X(p[0])+0.1, Y(p[0])); 筆.stroke();
+  } else if(l.具 === "箭頭"){
+    const a = p[0], b = p[p.length-1], dx = X(b)-X(a), dy = Y(b)-Y(a), L = Math.hypot(dx, dy);
+    筆.lineWidth = Math.max(1.5, W*1.1); 筆.beginPath(); 筆.moveTo(X(a), Y(a)); 筆.lineTo(X(b), Y(b)); 筆.stroke();
+    if(L > 2){ const h = Math.max(10, W*5), ux = dx/L, uy = dy/L;
+      筆.beginPath(); 筆.moveTo(X(b), Y(b)); 筆.lineTo(X(b)-h*ux+h*0.55*uy, Y(b)-h*uy-h*0.55*ux); 筆.lineTo(X(b)-h*ux-h*0.55*uy, Y(b)-h*uy+h*0.55*ux); 筆.closePath(); 筆.fill(); }
+  } else if(l.具 === "圈"){
+    const a = p[0], b = p[p.length-1];
+    筆.lineWidth = Math.max(1.5, W*1.1); 筆.beginPath();
+    筆.ellipse((X(a)+X(b))/2, (Y(a)+Y(b))/2, Math.abs(X(b)-X(a))/2 + 0.5, Math.abs(Y(b)-Y(a))/2 + 0.5, 0, 0, Math.PI*2); 筆.stroke();
+  } else {
+    for(let i = 1; i < p.length; i++){
+      筆.lineWidth = Math.max(1, W * (0.6 + 0.8*(p[i][2] ?? 0.5)));
+      筆.beginPath(); 筆.moveTo(X(p[i-1]), Y(p[i-1])); 筆.lineTo(X(p[i]), Y(p[i])); 筆.stroke();
+    }
+    if(p.length === 1){ 筆.beginPath(); 筆.arc(X(p[0]), Y(p[0]), W*0.6, 0, 7); 筆.fill(); }
   }
-  if(p.length === 1){ 筆.beginPath(); 筆.arc(f.x+p[0][0]*f.w, f.y+p[0][1]*f.h, 線.粗*f.w*0.6, 0, 7); 筆.fill(); }
+  筆.restore();
 }
 function 重畫(){ const r = 畫布.getBoundingClientRect(); 筆.clearRect(0, 0, r.width, r.height); 線們.forEach(畫一條); if(現線) 畫一條(現線); }
 function 點(e){
   const f = 影片框(), x = (e.clientX - f.r.left - f.x)/f.w, y = (e.clientY - f.r.top - f.y)/f.h;
   const 壓 = e.pointerType === "mouse" ? 0.5 : (e.pressure || 0.5);
-  return [+x.toFixed(5), +y.toFixed(5), +壓.toFixed(3), Math.round(performance.now() - (錄中 ? 起 : 0))];
+  return [+x.toFixed(5), +y.toFixed(5), +壓.toFixed(3), 聲時()];
 }
+/* 橡皮擦：點到哪一筆（離線段 12 像素內）就擦掉那一筆 */
+function 距段(px, py, ax, ay, bx, by){ const dx = bx-ax, dy = by-ay, L = dx*dx+dy*dy; let t = L ? ((px-ax)*dx+(py-ay)*dy)/L : 0; t = Math.max(0, Math.min(1, t)); return Math.hypot(px-ax-t*dx, py-ay-t*dy); }
+function 輪廓(l){ const p = l.點; if(l.具 === "箭頭") return [p[0], p[p.length-1]];
+  if(l.具 === "圈"){ const a = p[0], b = p[p.length-1], cx = (a[0]+b[0])/2, cy = (a[1]+b[1])/2, rx = Math.abs(b[0]-a[0])/2, ry = Math.abs(b[1]-a[1])/2;
+    return Array.from({length:41}, (_, i) => [cx+rx*Math.cos(i/40*2*Math.PI), cy+ry*Math.sin(i/40*2*Math.PI)]); }
+  return p; }
+function 擦(e){
+  const f = 影片框(), px = e.clientX - f.r.left, py = e.clientY - f.r.top, 擦掉 = [];
+  for(let i = 線們.length - 1; i >= 0; i--){
+    const q = 輪廓(線們[i]).map(z => [f.x+z[0]*f.w, f.y+z[1]*f.h]), 寬 = 線們[i].具 === "螢光" ? 線們[i].粗*f.w*1.6 : 0;
+    let 中 = q.length === 1 ? Math.hypot(px-q[0][0], py-q[0][1]) < 12 + 寬 : false;
+    for(let k = 1; k < q.length && !中; k++) 中 = 距段(px, py, q[k-1][0], q[k-1][1], q[k][0], q[k][1]) < 12 + 寬;
+    if(中) 擦掉.push(線們.splice(i, 1)[0].號);
+  }
+  if(擦掉.length){ 重畫(); 記("erase", {號們:擦掉}); 更新工具(); }
+}
+let 擦中 = false;
 畫布.addEventListener("pointerdown", e => {
   if(!檔資料) return;
   if(e.pointerType === "pen") 有筆 = true;
   if(有筆 && e.pointerType === "touch") return;              // 用觸控筆時忽略手掌
-  try{ 畫布.setPointerCapture(e.pointerId); }catch(err){}     // 抓不到也要能畫，不能讓這一筆漏記
-  現線 = {色, 粗, 裝置:e.pointerType, 開始影片秒:+影片.currentTime.toFixed(3), 影片在播:!影片.paused, 點:[點(e)]};
+  try{ 畫布.setPointerCapture(e.pointerId); }catch(err){}     // 抓不到也要能畫
+  if(工具 === "擦"){ 擦中 = true; 擦(e); return; }
+  現線 = {號:下號++, 具:工具, 色, 粗, 裝置:e.pointerType, 開始影片秒:+影片.currentTime.toFixed(4), 影片在播:!影片.paused, 點:[點(e)]};
   重畫();
   if(!錄中 && !提醒過){ 提醒過 = true; 吐("還沒開始錄音：先畫的線，按錄音時會一起記下來"); }
 });
-畫布.addEventListener("pointermove", e => { if(!現線) return; for(const c of (e.getCoalescedEvents ? e.getCoalescedEvents() : [e])) 現線.點.push(點(c)); 重畫(); });
-function 收筆(){ if(!現線) return; 線們.push(現線); 記("stroke", {線:現線, 結束影片秒:+影片.currentTime.toFixed(3)}); 現線 = null; 重畫(); 更新工具(); }
+畫布.addEventListener("pointermove", e => {
+  if(擦中){ 擦(e); return; }
+  if(!現線) return;
+  for(const c of (e.getCoalescedEvents ? e.getCoalescedEvents() : [e])) 現線.點.push(點(c));
+  重畫();
+});
+function 收筆(){ 擦中 = false; if(!現線) return;
+  if((現線.具 === "箭頭" || 現線.具 === "圈") && 現線.點.length < 2){ 現線 = null; 重畫(); return; }   // 只點一下不算
+  線們.push(現線); 記("stroke", {線:現線, 結束影片秒:+影片.currentTime.toFixed(4)}); 現線 = null; 重畫(); 更新工具(); }
 畫布.addEventListener("pointerup", 收筆); 畫布.addEventListener("pointercancel", 收筆);
-function 選色(b){ $$(".色鈕").forEach(x => x.setAttribute("aria-pressed", x === b)); 色 = b.dataset.色; }
+function 選具(名){ 工具 = 名; $$("[data-具]").forEach(x => x.setAttribute("aria-pressed", x.dataset.具 === 名)); 畫布.classList.toggle("擦", 名 === "擦"); }
+$$("[data-具]").forEach(b => b.onclick = () => 選具(b.dataset.具));
+function 選色(b){ $$(".色鈕").forEach(x => x.setAttribute("aria-pressed", x === b)); 色 = b.dataset.色; if(工具 === "擦") 選具("筆"); }
 $$(".色鈕").forEach(b => b.onclick = () => 選色(b));
 $$(".粗鈕").forEach(b => b.onclick = () => { $$(".粗鈕").forEach(x => x.setAttribute("aria-pressed", x === b)); 粗 = +b.dataset.粗; });
-function 收回(){ if(線們.pop()){ 重畫(); 記("undo"); 更新工具(); } }
+function 收回(){ const l = 線們.pop(); if(l){ 重畫(); 記("undo", {號:l.號}); 更新工具(); } }
 $("#復原").onclick = 收回;
 $("#清除").onclick = () => { if(線們.length){ 線們 = []; 重畫(); 記("clear"); 更新工具(); } };
 $("#自動清").onclick = () => { 自動清 = !自動清; $("#自動清").setAttribute("aria-pressed", 自動清);
-  $("#自動清").title = "按播放時自動清掉線：" + (自動清 ? "開" : "關"); 吐(自動清 ? "按播放時會自動清掉畫的線" : "按播放時線會留著，要清請按橡皮擦"); 記("autoclear", {on:自動清}); };
+  $("#自動清").title = "按播放時自動清掉畫的線：" + (自動清 ? "開" : "關"); 吐(自動清 ? "按播放時會自動清掉畫的線" : "按播放時線會留著，要清請按垃圾桶"); 記("autoclear", {on:自動清}); };
 function 更新工具(){ $("#復原").disabled = !線們.length; $("#清除").disabled = !線們.length; }
 
-// 鍵盤：照常見影片和繪圖軟體的習慣（⌘Z 收回、[ ] 粗細、方向鍵前後跳）
 function 選粗(i){ const b = $$(".粗鈕"); i = Math.max(0, Math.min(b.length-1, i)); b[i].click(); }
 function 粗位(){ return [...$$(".粗鈕")].findIndex(b => b.getAttribute("aria-pressed") === "true"); }
-function 跳(秒){ if(!檔資料) return; 影片.currentTime = Math.max(0, Math.min(影片.duration, 影片.currentTime + 秒)); 更新時間(); }
 addEventListener("keydown", e => {
-  if(e.target.closest && e.target.closest("input:not([type=range]),textarea")) return;
+  if(e.target.closest && e.target.closest("input:not([type=range]),textarea,select")) return;
   if(!$("#說明窗").hidden || !$("#存好窗").hidden || !$("#麥窗").hidden){ if(e.key === "Escape") $$(".罩").forEach(w => w.hidden = true); return; }
   const 指令 = e.metaKey || e.ctrlKey;
   if(指令 && (e.key === "z" || e.key === "Z") && !e.shiftKey){ e.preventDefault(); 收回(); return; }
   if(指令 || e.altKey) return;
-  const k = e.key;
+  const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
   if(e.code === "Space"){ e.preventDefault(); 播(); }
-  else if(k === "z" || k === "Z") 收回();
-  else if(k === "Backspace" || k === "Delete" || k === "c" || k === "C"){ e.preventDefault(); $("#清除").click(); }
+  else if(k === "z") 收回();
+  else if(k === "Backspace" || k === "Delete" || k === "c"){ e.preventDefault(); $("#清除").click(); }
   else if(/^[1-5]$/.test(k)) 選色($$(".色鈕")[+k - 1]);
+  else if(k === "b") 選具("筆"); else if(k === "h") 選具("螢光"); else if(k === "a") 選具("箭頭"); else if(k === "o") 選具("圈"); else if(k === "e") 選具("擦");
   else if(k === "[") 選粗(粗位() - 1);
   else if(k === "]") 選粗(粗位() + 1);
-  else if(k === "a" || k === "A") $("#自動清").click();
   else if(k === "ArrowLeft"){ e.preventDefault(); 跳(e.shiftKey ? -1 : -5); }
   else if(k === "ArrowRight"){ e.preventDefault(); 跳(e.shiftKey ? 1 : 5); }
-  else if(k === "m" || k === "M") $("#原聲").click();
-  else if(k === "r" || k === "R"){ if(!$("#錄鈕").disabled) $("#錄鈕").click(); }
+  else if(k === ",") 一格(-1); else if(k === ".") 一格(1);
+  else if(k === "m") $("#原聲").click();
+  else if(k === "r"){ if(!$("#錄鈕").disabled) $("#錄鈕").click(); }
   else if(k === "?" || k === "/") 開窗("#說明窗");
 });
 
-// ---------- 選麥克風（外接麥克風也能選；插拔時自動更新，記住上次選的） ----------
+// ---------- 選麥克風 ----------
 function 讀存(k){ try{ return localStorage.getItem(k) || ""; }catch(e){ return ""; } }
 function 寫存(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
 async function 列麥(){
@@ -430,75 +540,135 @@ $("#麥克風").onchange = e => { 寫存("講解錄製_麥", e.target.value); �
 navigator.mediaDevices?.addEventListener?.("devicechange", 列麥);
 列麥();
 
-// ---------- 錄音 ----------
-function 聲音格式(){ for(const t of ["audio/webm;codecs=opus","audio/mp4","audio/webm"]) if(window.MediaRecorder && MediaRecorder.isTypeSupported(t)) return t; return ""; }
+// ---------- 錄音：AudioWorklet 收取樣（記下第一個取樣在 AudioContext 時鐘的位置，事件都用同一個時鐘） ----------
+const 收音程式 = `class 收 extends AudioWorkletProcessor{
+  constructor(){ super(); this.錄 = false; this.起 = null;
+    this.port.onmessage = e => { if(e.data === "start"){ this.錄 = true; this.起 = null; } else if(e.data === "stop"){ this.錄 = false; this.port.postMessage({停:currentFrame}); } }; }
+  process(ins){ const ch = ins[0] && ins[0][0];
+    if(this.錄 && ch){ if(this.起 === null){ this.起 = currentFrame; this.port.postMessage({起:currentFrame, 率:sampleRate}); }
+      const b = new Int16Array(ch.length); let s = 0;
+      for(let i = 0; i < ch.length; i++){ const x = Math.max(-1, Math.min(1, ch[i])); b[i] = x < 0 ? x*32768 : x*32767; s += x*x; }
+      this.port.postMessage({框:currentFrame, 資:b, 量:s/ch.length}, [b.buffer]); }
+    return true; } }
+registerProcessor("收", 收);`;
+/* 本機檔案（file://）打開時 Chrome 不讓 blob: 網址當 worklet，改用 data: 網址；兩種都試 */
+async function 載收音(境){
+  const 試 = [() => "data:application/javascript;base64," + btoa(unescape(encodeURIComponent(收音程式))),
+             () => URL.createObjectURL(new Blob([收音程式], {type:"application/javascript"}))];
+  let 錯 = null;
+  for(const 網 of 試){ const u = 網(); try{ await 境.audioWorklet.addModule(u); return; }catch(e){ 錯 = e; } finally{ if(u.startsWith("blob:")) URL.revokeObjectURL(u); } }
+  throw 錯;
+}
 $("#錄鈕").onclick = () => 錄中 ? 結束() : 開始();
 async function 開始(){
-  if(!$("#補存").hidden){ 吐("請先處理上方「上次的錄音」：存下來或不要了"); return; }   // 開始新的會清掉舊的，不能讓沒存的錄音不見
-  if(!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder){ $("#麥因").textContent = "這個瀏覽器不支援錄音，請改用最新版的 Chrome 或 Safari。"; 開窗("#麥窗"); return; }
+  if(!$("#補存").hidden){ 吐("請先處理上方「上次的錄音」：存下來或不要了"); return; }
+  if(!navigator.mediaDevices?.getUserMedia || !window.AudioWorkletNode){ $("#麥因").textContent = "這個瀏覽器不支援錄音，請改用最新版的 Chrome。"; 開窗("#麥窗"); return; }
   if(準備中) return;
-  準備中 = true; $("#錄鈕").disabled = true; $("#錄字").textContent = "準備麥克風…";     // 接上麥克風要一點時間，先讓人知道有按到
-  let 流;
+  準備中 = true; $("#錄鈕").disabled = true; $("#錄字").textContent = "準備麥克風…";
   const 選麥 = $("#麥克風").value;
   const 要求 = 編號 => ({audio:Object.assign({echoCancellation:false, noiseSuppression:false, autoGainControl:false, channelCount:1}, 編號 ? {deviceId:{exact:編號}} : {})});
   try{
-    try{ 流 = await navigator.mediaDevices.getUserMedia(要求(選麥)); }
-    catch(err){ if(!選麥 || err.name === "NotAllowedError") throw err; 吐("找不到選的麥克風，改用系統預設的"); 流 = await navigator.mediaDevices.getUserMedia(要求("")); }
-  }
-  catch(err){ $("#麥因").textContent = err.name === "NotAllowedError" ? "瀏覽器擋住了麥克風。照下面的方法打開後，再按一次「開始錄音」。" : "找不到麥克風（" + err.message + "）。接好麥克風後再試一次。"; 開窗("#麥窗"); return; }
-  finally{ 準備中 = false; $("#錄鈕").disabled = false; $("#錄字").textContent = "開始錄音"; }
-  const 型 = 聲音格式();
-  錄 = new MediaRecorder(流, 型 ? {mimeType:型, audioBitsPerSecond:64000} : {});
-  聲塊 = []; 事件 = []; 錄中 = true; 起 = performance.now();
-  const 軌 = 流.getAudioTracks()[0];
+    try{ 麥流 = await navigator.mediaDevices.getUserMedia(要求(選麥)); }
+    catch(err){ if(!選麥 || err.name === "NotAllowedError") throw err; 吐("找不到選的麥克風，改用系統預設的"); 麥流 = await navigator.mediaDevices.getUserMedia(要求("")); }
+    聲境 = new (window.AudioContext || window.webkitAudioContext)({latencyHint:"interactive"});
+    if(聲境.state !== "running") await 聲境.resume();
+    await 載收音(聲境);
+    收節點 = new AudioWorkletNode(聲境, "收", {numberOfInputs:1, numberOfOutputs:1, outputChannelCount:[1]});
+    const 靜 = 聲境.createGain(); 靜.gain.value = 0;
+    聲境.createMediaStreamSource(麥流).connect(收節點); 收節點.connect(靜).connect(聲境.destination);
+    起框 = null; 收到框 = 0; 待塊 = []; 待長 = 0; 塊們 = []; 事件 = []; 上格 = -1; 補零 = 0;
+    const 起好 = new Promise((ok, 不行) => { const 計 = setTimeout(() => 不行(new Error("麥克風沒有聲音進來")), 4000);
+      收節點.port.onmessage = m => { const d = m.data;
+        if(d.起 !== undefined){ clearTimeout(計); 取樣率 = d.率; 起框 = d.起; 收到框 = d.起; ok(); }
+        else if(d.資) 收(d);
+        else if(d.停 !== undefined && 收節點._停) 收節點._停(d.停); }; });
+    收節點.port.postMessage("start");
+    await 起好;
+  }catch(err){
+    停麥();
+    $("#麥因").textContent = err.name === "NotAllowedError" ? "瀏覽器擋住了麥克風。照下面的方法打開後，再按一次「開始錄音」。" : "麥克風沒辦法用（" + err.message + "）。接好麥克風後再試一次。";
+    開窗("#麥窗"); return;
+  }finally{ 準備中 = false; $("#錄鈕").disabled = false; $("#錄字").textContent = "開始錄音"; }
+  錄中 = true;
+  const 軌 = 麥流.getAudioTracks()[0];
   await 列麥(); const 實際 = 軌.getSettings().deviceId; if(實際 && [...$("#麥克風").options].some(o => o.value === 實際)) $("#麥克風").value = 實際;
   $("#麥克風").disabled = true;
-  會話 = {格式:版本, 開始時間:new Date().toISOString(), 影片:檔資料, 聲音格式:錄.mimeType,
-          麥克風:{取樣:軌.getSettings().sampleRate || null, 裝置:軌.label}, 畫面:{寬:畫布.clientWidth, 高:畫布.clientHeight}, 瀏覽器:navigator.userAgent};
-  錄.ondataavailable = e => { if(e.data.size){ 聲塊.push(e.data); 存塊(e.data); } };
-  錄.onstart = () => 記("recorder-start");
-  錄.start(1000);
+  會話 = {格式:版本, 開始時間:new Date().toISOString(), 影片:檔資料, 取樣率, 聲音:"voice.wav",
+          麥克風:{裝置:軌.label, 設定:軌.getSettings()}, 聲音延遲:{base:聲境.baseLatency ?? null, output:聲境.outputLatency ?? null},
+          畫面:{寬:畫布.clientWidth, 高:畫布.clientHeight}, 瀏覽器:navigator.userAgent};
   記("start", {paused:影片.paused, rate:影片.playbackRate, muted:影片.muted, autoclear:自動清});
-  if(線們.length) 記("visible", {線們});           // 開始錄時畫面上已經有的線
-  音量表(流);
+  if(線們.length) 記("visible", {線們:JSON.parse(JSON.stringify(線們))});
   $("#錄鈕").classList.add("中"); $("#錄字").textContent = "結束並存檔"; $("#錄狀").hidden = false;
-  計時 = setInterval(() => { const s = (performance.now()-起)/1000; $("#錄時").textContent = 兩位(Math.floor(s/60)) + ":" + 兩位(Math.floor(s%60)); }, 250);
+  計時 = setInterval(() => { const s = 聲時() || 0; $("#錄時").textContent = 兩位(Math.floor(s/60)) + ":" + 兩位(Math.floor(s%60)); }, 250);
   await 開資料庫(); 清資料庫(); 存會話();
   吐("開始錄音了（" + (軌.label || "麥克風") + "），邊看邊講吧");
 }
-function 結束(){
-  if(!錄 || 存中) return;
+/* 收到一小塊取樣：照 AudioContext 的格數排好，中間如果漏掉就補安靜，錄音的時間軸才不會跑掉 */
+function 收(d){
+  if(d.框 > 收到框){ const 缺 = d.框 - 收到框; 待塊.push(new Int16Array(缺)); 待長 += 缺; 補零 += 缺; }
+  const 重疊 = Math.max(0, 收到框 - d.框); const 資 = 重疊 ? d.資.subarray(Math.min(重疊, d.資.length)) : d.資;
+  待塊.push(資); 待長 += 資.length; 收到框 = Math.max(收到框, d.框 + d.資.length);
+  $("#量").style.width = Math.max(0, Math.min(100, (10*Math.log10(d.量 + 1e-9) + 60)/50*100)) + "%";
+  if(待長 >= 取樣率){ const 合 = 併(待塊, 待長); 塊們.push(合); 存塊(合); 待塊 = []; 待長 = 0; }
+}
+function 併(列, 長){ const 出 = new Int16Array(長); let o = 0; for(const x of 列){ 出.set(x, o); o += x.length; } return 出; }
+function 停麥(){ try{ 麥流?.getTracks().forEach(t => t.stop()); }catch(e){} try{ 聲境?.close(); }catch(e){} 麥流 = null; 聲境 = null; 收節點 = null; }
+async function 結束(){
+  if(!錄中 || 存中) return;
   存中 = true; $("#錄字").textContent = "存檔中…"; $("#錄鈕").disabled = true;
   if(!影片.paused) 影片.pause();
   記("stop");
-  錄.onstop = async () => {
-    錄中 = false; clearInterval(計時); $("#錄狀").hidden = true;
-    錄.stream.getTracks().forEach(t => t.stop()); if(聲境) 聲境.close();
-    const 名 = await 下載(new Blob(聲塊, {type:錄.mimeType}), Object.assign({}, 會話, {結束時間:new Date().toISOString(), 事件}));
-    清資料庫();
-    存中 = false; $("#麥克風").disabled = false; $("#錄鈕").disabled = false; $("#錄鈕").classList.remove("中"); $("#錄字").textContent = "開始錄音";
-    $("#存好名").textContent = 名; 開窗("#存好窗");
-  };
-  錄.stop();
-}
-async function 下載(聲, 資料){
-  資料.聲音 = await new Promise(ok => { const r = new FileReader(); r.onload = () => ok(r.result); r.readAsDataURL(聲); });
-  const 名 = (資料.影片?.檔名 || "影片").replace(/\.[^.]+$/, "") + "_講解_" + 本地時間(new Date(資料.開始時間)) + ".json";
-  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(資料)], {type:"application/json"})); a.download = 名;
-  document.body.appendChild(a); a.click(); a.remove();
-  return 名;
-}
-function 音量表(流){
-  聲境 = new (window.AudioContext || window.webkitAudioContext)();
-  const 量 = 聲境.createAnalyser(); 量.fftSize = 1024; 聲境.createMediaStreamSource(流).connect(量);
-  const 資 = new Float32Array(量.fftSize), 條 = $("#量");
-  (function 跑(){ if(!錄中){ 條.style.width = "0"; return; } 量.getFloatTimeDomainData(資); let s = 0; for(const x of 資) s += x*x;
-    const db = 10*Math.log10(s/資.length + 1e-9); 條.style.width = Math.max(0, Math.min(100, (db+60)/50*100)) + "%"; requestAnimationFrame(跑); })();
+  await new Promise(ok => { 收節點._停 = ok; 收節點.port.postMessage("stop"); setTimeout(ok, 1500); });
+  await new Promise(r => setTimeout(r, 50));            // 最後幾塊取樣送到
+  錄中 = false; clearInterval(計時); $("#錄狀").hidden = true;
+  if(待長){ const 合 = 併(待塊, 待長); 塊們.push(合); 待塊 = []; 待長 = 0; }
+  const 長 = 塊們.reduce((s, x) => s + x.length, 0) / 取樣率;
+  停麥();
+  const 名 = 打包下載(塊們, Object.assign({}, 會話, {結束時間:new Date().toISOString(), 聲音長度:+長.toFixed(4), 補安靜取樣:補零, 事件}));
+  清資料庫();
+  存中 = false; $("#麥克風").disabled = false; $("#錄鈕").disabled = false; $("#錄鈕").classList.remove("中"); $("#錄字").textContent = "開始錄音";
+  $("#存好名").textContent = 名; $("#存好長").textContent = 秒字(長); 開窗("#存好窗");
 }
 
-// ---------- 當機或不小心關掉時，錄到的東西留在這台裝置，下次打開可以補存 ----------
+// ---------- 存檔：一個 zip（lecture.json＋voice.wav），不壓縮 ----------
+const CRC表 = (() => { const t = new Uint32Array(256); for(let n = 0; n < 256; n++){ let c = n; for(let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc(c, u8){ for(let i = 0; i < u8.length; i++) c = CRC表[(c ^ u8[i]) & 255] ^ (c >>> 8); return c; }
+function wav頭(取樣數, 率){ const b = new DataView(new ArrayBuffer(44)), w = (o, s) => [...s].forEach((ch, i) => b.setUint8(o+i, ch.charCodeAt(0)));
+  w(0,"RIFF"); b.setUint32(4, 36 + 取樣數*2, true); w(8,"WAVE"); w(12,"fmt "); b.setUint32(16,16,true); b.setUint16(20,1,true); b.setUint16(22,1,true);
+  b.setUint32(24, 率, true); b.setUint32(28, 率*2, true); b.setUint16(32,2,true); b.setUint16(34,16,true); w(36,"data"); b.setUint32(40, 取樣數*2, true); return new Uint8Array(b.buffer); }
+function zip(檔們){   // 檔們：[{名, 部分:[Uint8Array…]}]
+  const 出 = [], 目錄 = []; let 位 = 0;
+  for(const f of 檔們){
+    const 名 = new TextEncoder().encode(f.名); let c = 0xFFFFFFFF, 長 = 0;
+    for(const p of f.部分){ c = crc(c, p); 長 += p.length; } c = (c ^ 0xFFFFFFFF) >>> 0;
+    const h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true);
+    h.setUint32(14, c, true); h.setUint32(18, 長, true); h.setUint32(22, 長, true); h.setUint16(26, 名.length, true);
+    出.push(new Uint8Array(h.buffer), 名, ...f.部分);
+    目錄.push({名, c, 長, 位}); 位 += 30 + 名.length + 長;
+  }
+  let 目長 = 0;
+  for(const d of 目錄){ const h = new DataView(new ArrayBuffer(46));
+    h.setUint32(0, 0x02014b50, true); h.setUint16(4, 20, true); h.setUint16(6, 20, true); h.setUint16(8, 0x0800, true);
+    h.setUint32(16, d.c, true); h.setUint32(20, d.長, true); h.setUint32(24, d.長, true); h.setUint16(28, d.名.length, true); h.setUint32(42, d.位, true);
+    出.push(new Uint8Array(h.buffer), d.名); 目長 += 46 + d.名.length; }
+  const e = new DataView(new ArrayBuffer(22)); e.setUint32(0, 0x06054b50, true); e.setUint16(8, 目錄.length, true); e.setUint16(10, 目錄.length, true);
+  e.setUint32(12, 目長, true); e.setUint32(16, 位, true); 出.push(new Uint8Array(e.buffer));
+  return new Blob(出, {type:"application/zip"});
+}
+function 打包下載(塊, 資料){
+  const 取樣 = 塊.reduce((s, x) => s + x.length, 0);
+  const 聲部 = [wav頭(取樣, 資料.取樣率), ...塊.map(x => new Uint8Array(x.buffer, x.byteOffset, x.byteLength))];
+  const 包 = zip([{名:"lecture.json", 部分:[new TextEncoder().encode(JSON.stringify(資料))]}, {名:"voice.wav", 部分:聲部}]);
+  const 名 = (資料.影片?.檔名 || "影片").replace(/\.[^.]+$/, "") + "_講解_" + 本地時間(new Date(資料.開始時間)) + ".zip";
+  const a = document.createElement("a"); a.href = URL.createObjectURL(包); a.download = 名;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+  return 名;
+}
+
+// ---------- 當機或不小心關掉時，錄到的東西留在這台電腦，下次打開可以補存 ----------
 let 庫 = null;
-function 開資料庫(){ if(庫) return Promise.resolve(); return new Promise(ok => { try{ const q = indexedDB.open("老師講解錄製", 1);
+function 開資料庫(){ if(庫) return Promise.resolve(); return new Promise(ok => { try{ const q = indexedDB.open("老師講解錄製v2", 1);
   q.onupgradeneeded = () => { q.result.createObjectStore("塊", {autoIncrement:true}); q.result.createObjectStore("會話"); };
   q.onsuccess = () => { 庫 = q.result; ok(); }; q.onerror = () => ok(); } catch(e){ ok(); } }); }
 function 存塊(b){ try{ 庫 && 庫.transaction("塊","readwrite").objectStore("塊").add(b); }catch(e){} }
@@ -510,8 +680,9 @@ function 清資料庫(){ try{ if(!庫) return; const t = 庫.transaction(["塊",
   try{ const t = 庫.transaction(["塊","會話"]); const 會 = t.objectStore("會話").get("目前"), 塊 = t.objectStore("塊").getAll();
     t.oncomplete = () => { if(!會.result || !塊.result.length) return;
       $("#補存名").textContent = 會.result.影片?.檔名 || "影片"; $("#補存").hidden = false;
-      $("#補存下載").onclick = async () => { const 名 = await 下載(new Blob(塊.result, {type:會.result.聲音格式}), Object.assign({}, 會.result, {結束時間:null, 補存:true}));
-        清資料庫(); $("#補存").hidden = true; $("#存好名").textContent = 名; 開窗("#存好窗"); };
+      $("#補存下載").onclick = () => { const 長 = 塊.result.reduce((s, x) => s + x.length, 0) / 會.result.取樣率;
+        const 名 = 打包下載(塊.result, Object.assign({}, 會.result, {結束時間:null, 補存:true, 聲音長度:+長.toFixed(4)}));
+        清資料庫(); $("#補存").hidden = true; $("#存好名").textContent = 名; $("#存好長").textContent = 秒字(長); 開窗("#存好窗"); };
       $("#補存丟").onclick = () => { if($("#補存丟").dataset.再){ 清資料庫(); $("#補存").hidden = true; } else { $("#補存丟").dataset.再 = 1; $("#補存丟").textContent = "確定不要？再按一次"; } };
     };
   }catch(e){}
